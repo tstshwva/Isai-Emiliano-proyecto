@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seclon Analytics | Precision Intelligence</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Motor Matemático KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    
+    <!-- Gráficas Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="pro-theme">
+    <nav class="navbar">
+        <div class="logo">SECLON <span>ANALYTICS</span></div>
+        <div class="nav-utils">
+            <div class="voice-badge">
+                <span>Voz</span>
+                <input type="checkbox" id="voice-toggle">
+            </div>
+            <button class="help-btn" id="help-btn">?</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <button class="nav-btn active" data-tab="dash"><i class="icon">🏠</i> Inicio</button>
+            <button class="nav-btn" data-tab="stats"><i class="icon">📈</i> Estadística</button>
+            <button class="nav-btn" data-tab="graphs"><i class="icon">📊</i> Gráficas</button>
+            <button class="nav-btn" data-tab="sets"><i class="icon">⭕</i> Conjuntos</button>
+            <button class="nav-btn" data-tab="prob"><i class="icon">🎲</i> Probabilidad</button>
+            <button class="nav-btn" data-tab="chat"><i class="icon">💬</i> Chatbot IA</button>
+        </aside>
+
+        <main class="content">
+            <!-- INICIO -->
+            <div id="dash-tab" class="tab-view active">
+                <div class="hero-card">
+                    <h1>Bienvenido a SECLON ANALYTICS</h1>
+                    <p>Procesamiento de datos con rigor matemático y visualización dinámica.</p>
+                    <div class="math-intro">
+                        $$ P(A) = \frac{n(A)}{N} \quad \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n-1}} $$
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTADÍSTICA -->
+            <div id="stats-tab" class="tab-view">
+                <div class="glass-panel">
+                    <h3>Análisis de Dataset (N $\ge$ 20)</h3>
+                    <div class="input-row">
+                        <input type="text" id="data-input" class="glass-input" placeholder="Ej: 10, 20, 15, 30...">
+                        <button id="btn-gen" class="btn secondary">GENERAR 25</button>
+                        <button id="btn-run" class="btn primary">EJECUTAR</button>
+                    </div>
+                    
+                    <div id="results-cards" class="cards-row">
+                        <!-- Tarjetas con LaTeX símbolos -->
+                    </div>
+
+                    <div class="table-frame">
+                        <table id="table-freq">
+                            <thead>
+                                <tr>
+                                    <th>Clase</th>
+                                    <th>$x_i$</th>
+                                    <th>$f_i$</th>
+                                    <th>$f_r$</th>
+                                    <th>$F_i$</th>
+                                    <th>$F_r$</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRÁFICAS -->
+            <div id="graphs-tab" class="tab-view">
+                <div class="graphs-layout">
+                    <div class="graph-card full">
+                        <h3>Histograma y Polígono de Frecuencias</h3>
+                        <div class="canvas-wrapper"><canvas id="chart-hp"></canvas></div>
+                    </div>
+                    <div class="graph-card">
+                        <h3>Diagrama de Pareto</h3>
+                        <div class="canvas-wrapper"><canvas id="chart-p"></canvas></div>
+                    </div>
+                    <div class="graph-card">
+                        <h3>Ojiva de Galton</h3>
+                        <div class="canvas-wrapper"><canvas id="chart-o"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONJUNTOS -->
+            <div id="sets-tab" class="tab-view">
+                <div class="glass-panel">
+                    <h3>Operaciones Simbólicas</h3>
+                    <div class="input-row">
+                        <input type="text" id="set-a" class="glass-input" placeholder="A: 1, 2, 3">
+                        <input type="text" id="set-b" class="glass-input" placeholder="B: 3, 4, 5">
+                    </div>
+                    <button id="btn-sets" class="btn primary full">Calcular $A \cup B, A \cap B, A \setminus B$</button>
+                    <div id="sets-res" class="res-box"></div>
+                </div>
+            </div>
+
+            <!-- PROBABILIDAD -->
+            <div id="prob-tab" class="tab-view">
+                <div class="prob-grid">
+                    <div class="glass-panel">
+                        <h3>Análisis Combinatorio</h3>
+                        <div class="count-inputs">
+                            <input type="number" id="num-n" value="10">
+                            <input type="number" id="num-r" value="3">
+                        </div>
+                        <button id="btn-count" class="btn primary full">Calcular $_n P_r$ y $_n C_r$</button>
+                        <div id="count-res" class="res-box"></div>
+                    </div>
+                    <div class="glass-panel">
+                        <h3>Intersección de Eventos</h3>
+                        <div class="sim-group">
+                            <input type="text" id="tree-p1" value="0.5">
+                            <input type="text" id="tree-p2" value="0.3">
+                        </div>
+                        <button id="btn-tree" class="btn secondary full">Calcular $P(A \cap B)$</button>
+                        <div id="tree-res" class="res-box"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHATBOT -->
+            <div id="chat-tab" class="tab-view">
+                <div class="chat-app glass-panel">
+                    <div class="chat-nav">
+                        <select id="chat-style">
+                            <option>Normal</option><option>Profesional</option><option>Estudiante</option><option>Creativo</option>
+                        </select>
+                    </div>
+                    <div id="chat-history" class="chat-history"></div>
+                    <div class="chat-footer">
+                        <label for="file-up" class="attach-btn">📷</label>
+                        <input type="file" id="file-up" hidden>
+                        <input type="text" id="chat-inp" placeholder="Consulta matemática..." autocomplete="off">
+                        <button id="chat-send">➤</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
