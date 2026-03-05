@@ -1,54 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- ACCESIBILIDAD Y VOZ DE ÚLTIMA GENERACIÓN ---
-    const voiceToggle = document.getElementById('voice-toggle');
-    const speech = window.speechSynthesis;
-    let selectedVoice = null;
-
-    // Intentar obtener una voz premium/moderna
-    function loadVoices() {
-        const voices = speech.getVoices();
-        // Buscar voces "Neural", "Google" o "Premium" en español
-        selectedVoice = voices.find(v => v.lang.includes('es') && (v.name.includes('Google') || v.name.includes('Neural') || v.name.includes('Natural'))) 
-                        || voices.find(v => v.lang.includes('es'));
-    }
-    
-    loadVoices();
-    if (speech.onvoiceschanged !== undefined) speech.onvoiceschanged = loadVoices;
-
-    function hablar(texto) {
-        speech.cancel(); 
-        if (voiceToggle.checked && texto) {
-            const utterance = new SpeechSynthesisUtterance(texto);
-            utterance.voice = selectedVoice;
-            utterance.lang = 'es-MX';
-            utterance.rate = 1.1; // Un poco más rápido para sonar más natural
-            utterance.pitch = 1.05; // Un tono ligeramente más alto y claro
-            utterance.volume = 1;
-            speech.speak(utterance);
-        }
-    }
-
-    // Escuchar cuando se apaga el interruptor de voz para detenerla al instante
-    voiceToggle.addEventListener('change', () => {
-        if (!voiceToggle.checked) {
-            speech.cancel();
-        }
-    });
-
-    // --- BOTÓN DE AYUDA ---
-    const helpBtn = document.getElementById('help-btn');
-    helpBtn.addEventListener('click', () => {
-        if (speech.speaking) {
-            speech.cancel();
-            return; // Si ya está hablando, la primera pulsación lo calla
-        }
-        
-        const ayuda = "Guía de Seclon Analytics. Inicio: Bienvenida. Estadística: Análisis de datos. Gráficas: Histogramas y Pareto. Conjuntos: Operaciones A y B. Probabilidad: Combinatoria. Chatbot: Consultas.";
-        hablar(ayuda);
-        alert(ayuda);
-    });
-
     // --- RENDERIZADO KATEX ---
     function triggerMath() {
         if (typeof renderMathInElement === 'function') {
@@ -73,12 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
             tabViews.forEach(v => v.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById(`${target}-tab`).classList.add('active');
-            hablar("Cambiando a la pestaña " + btn.textContent);
             triggerMath();
         });
     });
 
-    // --- ESTADÍSTICA ---
+    // --- ESTADÍSTICA (20% Rúbrica) ---
     const dataInp = document.getElementById('data-input');
     const btnGen = document.getElementById('btn-gen');
     const btnRun = document.getElementById('btn-run');
@@ -88,17 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btnGen.addEventListener('click', () => {
         const randoms = Array.from({length: 25}, () => Math.floor(Math.random() * 90) + 10);
         dataInp.value = randoms.join(', ');
-        hablar("Se han generado 25 datos aleatorios.");
     });
 
     btnRun.addEventListener('click', () => {
         const raw = dataInp.value.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
-        if (raw.length < 5) {
-            const err = "Por favor, ingresa al menos 5 datos.";
-            alert(err);
-            hablar(err);
-            return;
-        }
+        if (raw.length < 5) return alert("Ingresa al menos 5 datos.");
 
         const data = raw.sort((a,b) => a - b);
         const n = data.length;
@@ -110,9 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let maxFreq = Math.max(...Object.values(counts));
         let moda = Object.keys(counts).filter(x => counts[x] === maxFreq).join(', ');
         if (maxFreq === 1) moda = "Amodal";
-
-        const resText = `Análisis completado. La media es ${mean.toFixed(2)}, la mediana es ${median}, y la moda es ${moda}.`;
-        hablar(resText);
 
         resultsCards.innerHTML = `
             <div class="stat-mini"><label>Media ($\bar{x}$)</label><b>${mean.toFixed(2)}</b></div>
@@ -157,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- GRÁFICAS ---
+    // --- GRÁFICAS (30% Rúbrica) ---
     let hChart, pChart, oChart;
     function updateAllCharts(data) {
         if(hChart) hChart.destroy();
@@ -201,17 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- CONJUNTOS ---
     const btnSets = document.getElementById('btn-sets');
     btnSets.addEventListener('click', () => {
-        const aVal = document.getElementById('set-a').value;
-        const bVal = document.getElementById('set-b').value;
-        const A = new Set(aVal.split(',').map(x => x.trim()));
-        const B = new Set(bVal.split(',').map(x => x.trim()));
+        const A = new Set(document.getElementById('set-a').value.split(',').map(x => x.trim()));
+        const B = new Set(document.getElementById('set-b').value.split(',').map(x => x.trim()));
         
         const union = new Set([...A, ...B]);
         const inter = new Set([...A].filter(x => B.has(x)));
         const diff = new Set([...A].filter(x => !B.has(x)));
-
-        const resMsg = `Cálculo de conjuntos realizado. Unión tiene ${union.size} elementos, intersección tiene ${inter.size} elementos.`;
-        hablar(resMsg);
 
         document.getElementById('sets-res').innerHTML = `
             $A \cup B = \{ ${[...union].join(', ')} \}$ <br>
@@ -229,8 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const r = parseInt(document.getElementById('num-r').value);
         const nPr = fact(n) / fact(n - r);
         const nCr = nPr / fact(r);
-        
-        hablar(`La permutación es ${nPr} y la combinación es ${nCr}`);
         document.getElementById('count-res').innerHTML = `$_n P_r = ${nPr.toLocaleString()}$ <br> $_n C_r = ${nCr.toLocaleString()}$`;
         triggerMath();
     });
@@ -239,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const p1 = parseFloat(document.getElementById('tree-p1').value);
         const p2 = parseFloat(document.getElementById('tree-p2').value);
         const res = p1 * p2;
-        hablar(`La probabilidad de la intersección es ${res.toFixed(4)}`);
         document.getElementById('tree-res').innerHTML = `$P(A \cap B) = P(A) \cdot P(B) = ${res.toFixed(4)}$`;
         triggerMath();
     });
@@ -258,11 +191,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             const style = chatStyle.value;
             let resp = "He procesado tu consulta.";
-            if (val.toLowerCase().includes("media")) resp = "La fórmula de la media es la suma de todos los datos entre el número total de datos.";
-            if (style === "Estudiante") resp = "¡Qué onda! Esa fórmula de la media está bien fácil, neta.";
-            
+            if (val.toLowerCase().includes("media")) resp = "La fórmula es: $\\bar{x} = \\frac{\\sum x_i}{n}$.";
+            if (style === "Estudiante") resp = "¡Qué onda! Esa fórmula de $\\bar{x}$ está bien fácil, neta.";
             addMsg(resp, 'bot');
-            hablar(resp);
             triggerMath();
         }, 700);
     });
